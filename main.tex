@@ -1,0 +1,87 @@
+\documentclass{cernatsnote}
+\usepackage{siunitx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{soul}
+%\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{placeins}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{booktabs}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}    %
+\usepackage{amssymb}
+\usepackage{url}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{threeparttable}
+\usepackage{multirow}
+\usepackage{rotating,tabularx}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+\usepackage{lipsum}
+\usepackage{subcaption}
+
+\title{Technical Note on stray fields in the PS}
+\author{
+	E.P. Johnson, M.A. Fraser\; \\		
+	CERN, CH-1211 Geneva, Switzerland
+}
+\emaila{eliott.philippe.johnson@cern.ch}
+%\emailb{user@cern.ch}
+\date{\today}
+
+\setlength {\marginparwidth }{2cm}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This technical note presents a comprehensive analysis of the stray fields of the main units of the PS.
+
+\end{abstract}
+\\ \\ \\ 
+\newpage
+
+\begingroup
+\color{black}
+\tableofcontents
+\endgroup
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Introduction %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{01_Introduction/01_Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Simulation %%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{02_Simulation/02_Simulation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Empirical Measurements %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{03_Empirical_Measurements/03_Empirical_Measurements}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Comparison between Simulation and  Measurements %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{04_Compare_Simulation_to_Measurements/04_Compare_Simulation_to_Measurements}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Conclusion %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conclusion}
+This technical note has presented a detailed analysis of ...
+
+\bibliography{references.bib}
+\bibliographystyle{IEEEtran}
+
+\end{document}
