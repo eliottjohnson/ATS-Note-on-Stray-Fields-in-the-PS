@@ -1,20 +1,15 @@
 \section{Introduction}
 
-This technical note presents a detailed analysis of studies around the stray fields of the PS main units.
+This technical note presents a detailed analysis of the stray fields in the main units of the Proton Synchrotron (PS).
 
 \subsection{Initial conditions}
 
-In the context of transfer lines, the determination of initial conditions during the construction of the MAD-X lattice model becomes a crucial consideration. While this factor is of less concern for circular machines due to their inherent periodicity, it necessitates explicit specification for linear lattices. Within the Proton Synchrotron (PS), there exist two extraction lines, F16 and F61. One approach to determine the initial conditions at the start of a transfer line, such as F61, is to track the particle within the PS ring and store the beam condition at the junction between the PS and the transfer line for use as initial conditions.
-
-However, this method encounters challenges in the PS where the main components are combined function magnets exhibiting strong stray fields. Complications are further exacerbated due to the necessity of extraction through the magnet's transverse plane, a constraint induced by limited space availability in the straight sections, resulting in a maximal impact from the stray fields. As a result, the beam conditions at extraction remain ambiguous.
-
-To circumvent these challenges, two methodologies are proposed to determine the initial conditions post the stray fields. The first method involves an empirical approach through measurement, which will be discussed in detail in Section \ref{section:Empirical_measurements} \nameref{section:Empirical_measurements}. The second method, on the other hand, resorts to the simulation of the main unit and its associated stray fields, a topic which will be elaborated upon in Section \ref{section:simulation} \nameref{section:simulation}.
+In the context of transfer lines, determining the initial conditions during the construction of the MAD-X lattice model is crucial. While this factor is less concerning for circular machines due to their inherent periodicity, it necessitates explicit specification for linear lattices. Within the PS, there are two extraction lines, F16 and F61. One approach to determine the initial conditions at the start of a transfer line, such as F61, is to track the particle within the PS ring and store the beam condition at the junction between the PS and the transfer line for use as initial conditions. However, this method encounters challenges in the PS where the main components are combined function magnets exhibiting strong stray fields. Complications are further exacerbated due to the necessity of extraction through the magnet's transverse plane, a constraint induced by limited space availability in the straight sections, resulting in a maximal impact from the stray fields. As a result, the beam conditions at extraction remain ambiguous. To circumvent these challenges, two methodologies are proposed to determine the initial conditions post the stray fields. The first method involves an empirical approach through measurement, which will be discussed in detail in Section \ref{section:Empirical_measurements} \nameref{section:Empirical_measurements}. The second method, on the other hand, resorts to the simulation of the main unit and its associated stray fields, a topic which will be elaborated upon in Section \ref{section:simulation} \nameref{section:simulation}.
 
 \subsection{Stray Fields and Field Maps}
 \subsubsection{PS Main Units}
 
-The CERN PS is composed of 100 combined-function Main Units (MU) magnets that produce dipolar and quadrupolar fields simultaneously to provide strong focusing. Each magnet is divided into two half-units with quadrupole gradients of opposite polarity. Half-units are composed of five blocks,
-either closed (focusing) or open (defocusing), see Fig. \ref{fig:vector_flow}.
+The CERN PS is composed of 100 combined-function Main Units (MU) magnets that produce dipolar and quadrupolar fields simultaneously to provide strong focusing. Each magnet is divided into two half-units with quadrupole gradients of opposite polarity. Half-units are composed of five blocks, either closed (focusing) or open (defocusing), see Fig. \ref{fig:vector_flow}.
 \\
 
 \begin{figure}[H]

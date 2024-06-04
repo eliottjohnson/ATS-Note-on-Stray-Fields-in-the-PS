@@ -29,7 +29,7 @@ Situated within the East Area complex is a short line, designed for extraction s
 % The process: How is the scan conducted?
 % The results: What data was collected? What are the key findings from the scan?
 
-A quadrupole scan are used to measure beam parameters and involves adjusting the strength of a quadrupole, and subsequently observing the variations in the beam size ($\sigma$) and beam position (centroid) across both planes using an instrument located downstream of the quadrupole being modified, see Fig. \ref{fig:quad_scan_example}. The objective of this scan is to finely tune the simulation tool MAD-X \cite{noauthor_mad_nodate} to enable the prediction of beam sizes through a model that has been adjusted according to these measurements. To achieve this, the initial parameters of the MAD-X model are aligned with the observed measurements as accurately as possible. It is generally advantageous to find the minimum and maximum values of the beam size at the instrument's location, which facilitates the reconstruction of the rematching of the initial conditions. The parameter-matching process is conducted in Python, utilizing either the Scipy or the Py-BOBYQA library\cite{cartis_improving_2019, cartis_escaping_2022} library.
+A quadrupole scan are used to measure beam parameters and involves adjusting the strength of a quadrupole, and subsequently observing the variations in the beam size ($\sigma$) and beam position (centroid) across both planes using an instrument located downstream of the quadrupole being modified, see Fig. \ref{fig:quad_scan_example}. The objective of this scan is to finely tune the simulation tool MAD-X \cite{noauthor_mad_nodate} to enable the prediction of beam sizes through a model that has been adjusted according to these measurements. To achieve this, the initial parameters of the MAD-X model are aligned with the observed measurements as accurately as possible. It is generally advantageous to find the minimum and maximum values of the beam size at the instrument's location, which facilitates the reconstruction of the rematching of the initial conditions. The parameter-matching process is conducted in Python, utilizing either the Scipy or the Py-BOBYQA library \cite{cartis_improving_2019, cartis_escaping_2022}.
 
 \begin{figure}[htbp]
 \centering
@@ -340,3 +340,7 @@ Figure \ref{fig:error_irrad_sim} shows the difference between the measurements a
 % \caption{PTC simulation of the beam distribution in real space at the IRRAD BPMs location.}
 % \label{fig:irrad_bpms_new_optics}
 % \end{figure}
+
+\subsection{Ion initial condition}
+
+Reference to IPAC 2024 contribution.
