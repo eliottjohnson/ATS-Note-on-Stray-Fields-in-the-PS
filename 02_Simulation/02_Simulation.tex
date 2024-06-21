@@ -362,6 +362,168 @@ We can also have a look at the twiss parameters evolution along the line, see Fi
 \label{fig:twiss_params}
 \end{figure}
 
+\begin{table}[ht]
+    \centering
+    \caption{Comparison of Twiss Parameters: Measurement vs. Stray Field PTC}
+    \begin{tabular}{l c c}
+        \hline
+        \textbf{Twiss Parameter} & \textbf{Measurement} & \textbf{Stray Field PTC} \\
+        \hline
+        $\beta_x$ & $1.54 \times 10^2$ & $1.54 \times 10^2$ \\
+        $\alpha_x$ & $-3.69 \times 10^1$ & $-3.63 \times 10^1$ \\
+        $\epsilon_x$ & $2.99 \times 10^{-7}$ & $1.83 \times 10^{-7}$ \\
+        \hline
+        $\beta_y$ & $5.22 \times 10^0$ & $2.70 \times 10^0$ \\
+        $\alpha_y$ & $2.52 \times 10^{-1}$ & $1.92 \times 10^0$ \\
+        $\epsilon_y$ & $1.38 \times 10^{-7}$ & $3.75 \times 10^{-8}$ \\
+        \hline
+    \end{tabular}
+    \label{tab:twiss_comparison_measurement_ptc}
+\end{table}
+
+From the previous plots, the horizontal model looks to work well. The vertical plane's description isn't as good.
+
+I tried to replace the horizontal MFC by a vertical MFC model to see how it impacts the particle distribution where I calculate $B_{x}$ as:
+
+$$ B_{x} = \begin{bmatrix}  
+x_{center} \\  
+y_{offset}\\
+z_{center} \end{bmatrix} $$
+
+with coupling terms (should be small) By(y) Bx(x) and $\frac{\delta^{k} B_{i}}{\delta^{k} x_{j}}$ terms. We observe that there is no difference between taking the MCP model of dBy/dx or dBx/dy it gives the same results in both planes. This can also be seen on Fig. \ref{fig:coupling_terms} that show that the second order terms are the same. Then I think that the initial distribution in the PS ring in the vertical plane is wrong.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{02_Simulation/images/coupling_terms.png}
+\caption{Coupling terms.}
+\label{fig:coupling_terms}
+\end{figure}
+
+Figure \ref{fig:comparison_sim_meas} shows the difference between the beam size observed at the BTV of the East Dump through simulation and beam size measurement. We observe an excellent agreement in the horizontal plane but a mismatch in the vertical plane.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/comparison_sim_meas.png}
+\caption{Comparison between the simulated and measurement beam size at the BTV of the East Dump.}
+\label{fig:comparison_sim_meas}
+\end{figure}
+
+\subsection{MU63}
+
+To fix the mismatch in the vertical plane, I tried to add the MU63 stray fields. I've tracked the particle reference trajectory and extracted the MFC, see Fig. \ref{fig:track_mu63, fig:mfc_mu63}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{02_Simulation/images/track_mu63.png}
+\caption{.}
+\label{fig:track_mu63}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{02_Simulation/images/mfc_mu63.png}
+\caption{.}
+\label{fig:mfc_mu63}
+\end{figure}
+
+However, with full multipole component of the MU63. This is incorrect as the MU63 has shims that straighten the B-field component which would drastically reduce the quadrupolar component. So I've kept only the dipole component which of course doesn't change the optics and improve the match in the vertical field.
+
+From this it seems that the optics in the horizontal plane are correct but mismatched in the vertical plane. This means I need to add a quadrupole component in a very low $\beta_{x}$ location upstream of the F61D line. Perhaps in MU61 the excursion is quite large already and there might be a quadrupole component. Thus I've tried optimizing on the MU61 quadrupole component by slightly changing the values and minimze the difference between measurement and simulation using Pybobyqa, the results are slightly better but not great.
+
+Then I've optimized on the four quadrupole components of MU60 and MU61, the two main units before extraction where the transverse excursion is already quite large and where the quadrupole component is not the one of the reference orbit. Each dipoles has two quadrupoles components which makes four parameters to optimize on.
+
+I've simulated the actual quadrupole components at the excursion using the opera model which gives me these values, see Fig. \ref{fig:comparison_four_compo}.
+
+pr.bht61.f = 0.02723
+pr.bht61.d = -0.05518
+pr.bhu60.f = 0.04969
+pr.bhu60.d = -0.05831
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/comparison_sim_meas_four_compo.png}
+\caption{Comparison four components.}
+\label{fig:comparison_four_compo}
+\end{figure}
+
+Running the optimizer algorithm, it converges on different quadrupole components with a better match between beam size and simulation.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/comparison_sim_meas_bobyqa.png}
+\caption{Comparison of beam size and simulation using pybobyqa.}
+\label{fig:comparison_bobyqa}
+\end{figure}
+
+\subsection{Replacing MU60 and MU61 with stray fields}
+
+From previous notes, it seems replacing only MU62 matched well the measurement in the horizontal plane but not in the vertical plane.
+
+Adding MU63 doesn't help correcting the mismatch in the vertical plane because it's in a region of high $\beta_{x}$ which would change the optics in that plane and additionally it is shimmed so I don't think there is much quadrupolar effect, thus I've added only the dipole component of this magnet.
+
+I've then thought about the large excursion in the two preceding main units, MU60 and MU61 and tried to optimise on the four quadrupole component that are in the PS lattice file.
+
+I found some solution that match the measurement pretty well but they are very different.
+
+\begin{table}[ht]
+    \centering
+    \caption{Twiss Parameters for MU60 and MU61}
+    \begin{tabular}{l c c c c}
+        \hline
+        & \textbf{MU60 d} & \textbf{MU60 f} & \textbf{MU61 f} & \textbf{MU61 d} \\
+        \hline
+        Row 1 & -0.1 & 0.1 & 0.0046 & -0.0862 \\
+        Row 2 & -0.094 & 0.1026 & -0.0247 & -0.0231 \\
+        Row 3 & -0.106 & 0.1045 & 0.0258 & -0.0955 \\
+        \hline
+    \end{tabular}
+    \label{tab:twiss_parameters_mu60_mu61}
+\end{table}
+
+
+
+If we compute the quadrupole component of MU60 and MU61 along the trajectory that ejects the beam, we see that the quadrupolar component can not be approximated by a single number.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{02_Simulation/images/mu60_mu61_quad_comp.png}
+\caption{MU60 and MU61 quadrupole components.}
+\label{fig:mu60_mu61_q_comp}
+\end{figure}
+
+If we compute an average quadrupole component in these regions and use them in the simulation it does not give good results, see Fig. \ref{fig:replace_with_average}. With these numbers the mismatch is quite high. I then think we need to replace with the full MFC model for both magnet and see how it behave.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/Replace MU60 and MU61 with stray field-2.png}
+\caption{Replace MU60 and MU61 quadrupole components with average components.}
+\label{fig:replace_with_average}
+\end{figure}
+
+\subsection{Adding the full stray fields of MU60 and MU61}
+
+To add the stray field MCP model of MU60 and MU61 in the PS lattice, the PR.MP60 and PR.MP61 elements where removed from the lattice and the MCP where inserted instead. Figure \ref{fig:mcp_mu60_mu61} shows the results in this configuration.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/mcp_mu60_mu61.png}
+\caption{Replace MU60 and MU61 with full stray field components.}
+\label{fig:mcp_mu60_mu61}
+\end{figure}
+
+One thing I don't understand is the excursion with stray MU60 and MU61 is larger then just a drift, see Fig. \ref{excursion_m60_mu61_mcp}. 
+
+I think it's because we have an large x-excursion which create a dipole moment from the quadrupole component. I should try to set x to zero.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/excursion_mu60_mu61_mcp.png}
+\caption{Excusrion MU60 and MU61 with full stray field components.}
+\label{fig:excursion_m60_mu61_mcp}
+\end{figure}
+
+Additional issues is that the MCP in these magnets is very dependant on the trajectory of the track of the reference particle that is launched to create the MCP map. Launching with slight offsets in angle and position will dramatically change the quadrupole component profile.
+
 \subsection{Simulation of Transfer Matrix Using Tracking at Injection}
 
 The following subsection describes the methodology and findings from a simulation study aimed at constructing a transfer matrix for the injection process in the Proton Synchrotron (PS) using tracking techniques. The primary objective is to evaluate the response of injected particles to various initial offsets and to compare the results with existing models.
