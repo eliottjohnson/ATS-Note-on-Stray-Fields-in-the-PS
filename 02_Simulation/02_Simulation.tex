@@ -1,21 +1,51 @@
 \section{Simulation}
 \label{section:simulation}
 
-\subsection{MAD-X}
+\subsection{Injection via BTP}
+As the beam is injected through the BTP transfer line to the PS ring, it passes through the stray fields of the PR.BHT41 T-type MU magnet. The beam traverses mostly through the defocusing half part and feels a non-linear increase in the gradient up to the nominal value in the central orbit; see Fig.~\ref{fig:injection_btp}. Once through MU41, the beam is deflected by the injection septum magnet (PI.SMH42) towards the central orbit. Immediately downstream of the septum, a Secondary Emission Grid (PI.BSG42) is available to measure the position and size of the beam.
+\\
+\\
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{01_Introduction/images/injection_tracking.png}
+   \caption{Tracking through MU41 T-type at \SI{2}{GeV}.}
+   \label{fig:injection_btp}
+\end{figure}
 
-\subsection{OPERA model of the MU (I can cite here the IPAC paper)}
+To test the model, measurements of beam position and size on PI.BSG42 were collected as the current provided by the main power supply (POPS) to the MUs was varied. As expected, an increasing current shows that the transverse position of the beam is bent closer towards the inside of the ring by the stronger stray field. Measurements were compared with simulations that tracked a single particle through the \SI{2}{GeV} T-type field map presented in Fig.~\ref{fig:injection_btp_transverse_position}. The tracking simulation overestimates the effect of the stray field because the magnetic model does not include the mu-metal shielding wrapped around the injection vacuum pipe. As expected, no deviation was observed in the vertical plane.
 
-\subsection{Explain that it defocuses in H and focuses in V}
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{01_Introduction/images/injection_measurement.png}
+   \caption{Measurements of the BT3 BTP PS kick response as a function of POPS at PI.BSG42 compared with the OPERA tracking model.}
+   \label{fig:injection_btp_transverse_position}
+\end{figure}
 
-\cite{johnson_beam_2022}
+The current implementation of the stray field in the \mbox{MAD-X}\cite{noauthor_mad_nodate} model is carried out as a sequence of Multipole Field Components (MFC model) expanded along the reference trajectory. A simplified approach with the field components extracted on an injected trajectory assumed as a straight line was compared with the measurements in Fig.~\ref{fig:injection_btp_beam_size}, where the beam size at PI.BSG42 is plotted as a function of the POPS current. We find good agreement in the horizontal plane but a mismatch in the vertical plane. Similar MFC models for injection and extraction have been created using a Taylor series of the multipole components of the magnetic field about the curved trajectory of the reference particle and will be discussed in section \ref{BTP Stray Elements}.
 
-\subsection{Kick response (maybe I need more data and MD for this or simply repeat the measurements)}
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{01_Introduction/images/injection_measurement_beam_size.png}
+   \caption{Measurements of the BT3 BTP PS beam size as a function of POPS at PI.BSG42 compared with the MFC model.}
+   \label{fig:injection_btp_beam_size}
+\end{figure}
 
-\subsection{Injection BTP MD}
+%\subsection{Extraction to the East Area}
+%The beam extracted to the East Area is significantly affected by stray fields in multiple main units because the slow extracted trajectory at high energy has a much shallower angle than at injection. As presented in Fig.~\ref{fig:stray field gradients}, the difference in the gradient of MU62 is striking in that the sign of the gradient flips and triples in amplitude. As a result, an increase in the horizontal beam size is expected at the exit of MU62. It is not understood why this magnet was not shimmed in the past to help reduce the effect of the stray field (perhaps because they would significantly impact the central orbit \cite{Zickler:private}), but it is undoubtedly the cause of the optics discrepancy observed during commissioning of the East Area transfer lines in 2021 \cite{huschauer:ipac22-mopost006}.
 
-\subsection{BTP stray elements}
+%\begin{figure}[!htb]
+%   \centering
+%   \includegraphics*[width=0.7\columnwidth]{01_Introduction/images/gradient_stray_field.png}
+%   \caption{Gradient seen by the slow extracted beam in the stray field of the few last MUs's focusing half-unit.}
+%   \label{fig:stray field gradients}
+%\end{figure}
 
-The BTP line has an old model (prior to 2021) that is composed of 233 thin multipole inserted at the end of the transfer line. The model can be accessed via the following links:
+
+
+\subsection{Multipole Field Components (MFC model)}
+\label{BTP Stray Elements}
+
+The BTP line has an old model (prior to 2021) that is composed of 233 thin multipole inserted at the end of the transfer line. This model served as an example and foundational framework for building further Multipole Field Component (MFC) models. By examining the structure and implementation of the BTP model, we were able to understand how thin multipoles can be effectively used to simulate complex magnetic fields along a transfer line. This knowledge was then applied to develop more accurate and detailed MFC models for other sections of the PS, including the main units and extraction lines. The model can be accessed via the following links:
 
 \begin{itemize}
     \item \href{https://gitlab.cern.ch/acc-models/acc-models-tls/-/blob/2021/psb_extraction/btp/BTP.ele}{BTP.ele}
@@ -24,7 +54,7 @@ The BTP line has an old model (prior to 2021) that is composed of 233 thin multi
 
 
 
-\subsection{Theory}
+\subsection{Multipole Field Components Computation}
 
 The magnetic field \( B_y \) can be expressed as:
 
@@ -38,9 +68,7 @@ where the coefficients \( B_i \) are given by:
 B_{i} = K_{i}B\rho
 \]
 
-In the old BTP model, the coefficients \( K_{0}, K_{1}, K_{2}, \) and \( K_{3} \) are used.
-
-The relationship for \( K_{0} \) is:
+In the old BTP model, the coefficients \( K_{0}, K_{1}, K_{2}, \) and \( K_{3} \) are used. The relationship for \( K_{0} \) is:
 
 \[
 K_{0}L = \frac{B_{0}L}{B\rho}
@@ -68,7 +96,7 @@ B_{0} = K_{0}B\rho
 K_{0} = \frac{B_{0}}{B\rho}
 \]
 
-The \( K_{1} \) coefficient is computed using two tracks and the relationship:
+The \( K_{1} \) coefficient is computed using two point that are computed transversely to the track and the relationship:
 
 \[
 K_{1} = \frac{\frac{\Delta B_{y}}{\Delta x}}{B\rho}
@@ -79,72 +107,71 @@ The \( K_{0}L \) component as a function of \( s \) is shown as follows:
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/BTP_old_model_stray.png}
-\caption{BTP Stray element old model.}
+\caption{BTP Stray Element - Reference Model.}
 \label{fig:transfer_matrix_1}
 \end{figure}
 
 
-A goal is to create a multi-component model similar to the old BTP model, first on the BTP line to compare with the old model and then to expand on different injection and extraction that passes through stray fields. The first step is launch particles on the reference track, track them in the stray field magnetic field and probe the B-field perpendicular to the track. Then a 4rd order polynomial is fit for everything position along the injection line, i.e. along different z in meters.
+The goal is to create a multi-component model similar to the old BTP model, starting with the BTP line to compare with the old model and then expanding to different injection and extraction lines that pass through stray fields. The first step is to launch particles on the reference track, track them in the stray field magnetic field, and probe the B-field perpendicular to the track. This process is illustrated in Figure \ref{fig:mcp_track}. The transverse B-field along the injection track is shown in Figure \ref{fig:mcp_track_2}. 
+
+Next, a 4th-order polynomial is fitted for every position along the injection line, i.e., along different z positions in meters, as depicted in Figure \ref{fig:fit_bfield}. The results from these polynomial fits are then used to compare different multipole components of the magnetic field.
+
+Figures \ref{fig:mcp_dipole} through \ref{fig:mcp_octupole} show the comparisons of the BTP stray multipole components: K0 (Dipole), K1 (Quadrupole), K2 (Sextupole), and K3 (Octupoles), respectively. These comparisons help validate the accuracy and detail of the multipole components from the new tracking script against the old BTP model.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/MCP_track.png}
-\caption{Tracking through the MCP injection.}
+\caption{Particle tracking through the magnetic field at injection in the PS via the BTP line. Note: this plot shows a old version of the script where the field is not computed transversely to the particle trajectory (lines are vertical) but this has been fixed in the following computations.}
 \label{fig:mcp_track}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/MCP_track_2.png}
-\caption{Probing the B-field tranversly to the injection track.}
-\label{fig:mcp_track}
+\caption{Transverse B-field along the injection track. One notices the increase in magnetic field as we increase z and move towards the magnet.}
+\label{fig:mcp_track_2}
 \end{figure}
-
-
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/fit_of_bfield.png}
-\caption{.}
+\caption{Polynomial Fits of \( B_y \) vs. \( x \) for Different Orders.}
 \label{fig:fit_bfield}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/mcp_dipole.png}
-\caption{BTP Stray multipole comparison, K0 (Dipole) comparison, main unit type-T}
+\caption{BTP Stray multipole comparison, K0 (Dipole) comparison, main unit type-T.}
 \label{fig:mcp_dipole}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/mcp_quadrupole.png}
-\caption{BTP Stray multipole comparison, K1 (Quadrupole) comparison, main unit type-T}
+\caption{BTP Stray multipole comparison, K1 (Quadrupole) comparison, main unit type-T.}
 \label{fig:mcp_quadrupole}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/mcp_sextupole.png}
-\caption{BTP Stray multipole comparison, K2 (Sextupole) comparison, main unit type-T}
+\caption{BTP Stray multipole comparison, K2 (Sextupole) comparison, main unit type-T.}
 \label{fig:mcp_sextupole}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/mcp_octupoles.png}
-\caption{BTP Stray multipole comparison, K3 (Octupoles) comparison, main unit type-T}
-\label{fig:mcp_quadrupole}
+\caption{BTP Stray multipole comparison, K3 (Octupoles) comparison, main unit type-T.}
+\label{fig:mcp_octupole}
 \end{figure}
 
-
-The code creates MCP models correctly along the s dimension (along the particles track) and transverse along the bend track. For small angles, the difference in dipole component along z or s can be neglected.
+The code accurately generates MCP models along the s-dimension (aligned with the particles' trajectory) and transversely along the bending track. For small angles, the variation in the dipole component between the z and s directions can be considered negligible.
 
 \subsection{Multipole field component in MU62}
 
-This section will talk about the multiple field component inside the MU62 main unit which is the magnet that the beam crosses through for the extraction to the East Area.
-
-The following \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/mfc_mu62.ipynb}{Notebook: MFC MU62} was used to create the MFC in MU62 using a \SI{24}{\giga\electronvolt\per\clight} beam. Figure \ref{fig:track_mu62} shows the particle track through the stray field of MU62. The initial launching coordinate of the reference particle were \si{0.132}{m} and \si{0.0139}{rad}. The field was probed transversely at discrete s-steps along the particle trajectory inside the vacuum pipe. The vacuum pipe aperture has a total width of \si{70}{mm}. We run a loop for each point in the track we save the $B_{y}$ field perpendicularly to the track  and run a polynomial fit of third order on By as a function of $x_{\perp}$
+This section describes the creation of the Multiple Field Component (MFC) within the MU62 main unit, the critical magnet through which the particle beam traverses during extraction to the East Area. The \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/mfc_mu62.ipynb}{Notebook: MFC MU62} was used to develop the MFC in MU62, using a \SI{24}{\giga\electronvolt\per\clight} beam. Figure \ref{fig:track_mu62_2} illustrates the particle track through the stray field of MU62. The initial launching coordinates of the reference particle were \SI{0.132}{\meter} and \SI{0.0139}{\radian}. The field was probed transversely at discrete s-steps along the particle trajectory inside the vacuum pipe, which has a total aperture width of \SI{70}{\milli\meter}. For each point in the track, the $B_{y}$ field perpendicular to the track was recorded, and a third-order polynomial fit of $B_{y}$ as a function of $x_{\perp}$ was performed.
 
 $$ \alpha = - tan^{-1}\left(\frac{ x_{i}-x_{i-1} } {z_{i}-z_{i-1}} \right)$$
 
@@ -154,14 +181,6 @@ x_{center} + x_{offset}\cdot cos(\alpha_{deflection}) \\
 z_{center} + x_{offset}\cdot sin(\alpha_{deflection})
 \end{bmatrix} $$
 
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=1.0\textwidth]{02_Simulation/images/track_mu62.png}
-\caption{Tracking of the proton beam in MU62}
-\label{fig:track_mu62}
-\end{figure}
 
 \begin{figure}[H]
 \centering
@@ -173,20 +192,20 @@ z_{center} + x_{offset}\cdot sin(\alpha_{deflection})
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/track_mu62_2_mfc.png}
-\caption{Tracking of the proton beam in MU62 MFC transverse dipoles component.\textcolor{red}{The x-label should be $x_{T}$} }
+\caption{Tracking of the Proton Beam in the Transverse Dipoles Component of MU62 and polynomial fit to create the MFC. The x-axis label should be $x_{T}$ [m]}
 \label{fig:track_mu62_2_mfc}
 \end{figure}
 
-Full tracking with along the beam line gives us the following MFC shown.
+Full tracking with fine sampling along the beam line gives us the following MFC shown in Fig. \ref{fig:mfc_mu62}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/mfc_mu62.png}
-\caption{MFC in MU62.}
+\caption{Fine sampling of the magnetic field in MU62 and expansion into MFC.}
 \label{fig:mfc_mu62}
 \end{figure}
 
-Theses MFC components can be exported to a file to be used in MAD-X. The format for the \texttt{.ele} file is as follows:
+Theses MFC components can be exported to a file to be used in MAD-X as multipoles. The format for the \texttt{.ele} file is as follows:
 
 \begin{lstlisting}
 stray1 : multipole, knl:={2.11E-07,-3.11E-06,5.25E-05,-0.001056026};
@@ -194,7 +213,7 @@ stray2 : multipole, knl:={2.78E-07,-4.03E-06,6.74E-05,-0.001303161};
 stray3 : multipole, knl:={3.54E-07,-5.09E-06,8.47E-05,-0.001548501};
 \end{lstlisting}
 
-When you export the multipole component you need to multiply by the length of the multipole element i.e.:
+When exporting the multipole component, it is necessary to multiply by the length of the multipole element, i.e.,:
 
 \[
 \frac{L_{\text{Total}}}{l_{\text{element}}}
@@ -210,21 +229,10 @@ stray3, at = 29.9766067;
 
 \subsection{Initial condition in F61D}
 
-The MFC model was added to the F61D transfer line in MAD-X, see Fig. \ref{fig:f61d_with_stray}. The F61D with stray field line \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/c6cbcafacca274000d2bfc501f39cf711375de90/ps_extraction/east-fast-extraction/f61d_with_stray/F61D_with_stray.ipynb}{script} has the stray field element of the MU62 magnet decomposed into multipole and can be found at \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/c6cbcafacca274000d2bfc501f39cf711375de90/ps_extraction/east-fast-extraction/f61d_with_stray/strayMU62.ele}{strayMU62.ele} and \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/c6cbcafacca274000d2bfc501f39cf711375de90/ps_extraction/east-fast-extraction/f61d_with_stray/strayMU62.seq}{strayMU62.seq}.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=1.0\textwidth]{02_Simulation/images/F61D_with_stray.png}
-\caption{F61D with stray field multipole of MU62. The orange rectangle in the synoptic represents the multipole component of the stray field.}
-\label{fig:f61d_with_stray}
-\end{figure}
-
-
-The initial condition of the F61D transfer line were found using the twiss parameters from the PS Ring slow extraction \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/Check%20scripts/slow_extraction_trajectory_maptrack_inital_conditions.ipynb}{script}. The beam enveloppe was extracted using a pycollimate simulation and retrieving the four particles marking the edge of the extracted separatrix, see Fig. \ref{fig:init_pycollimate}. The tune of the PS was match to be on resonance and the chromaticity match to measurement from 12.11.2021 (Qxp=-1.239, Qyp=0.242). These four particles were tracked during their last turn before being extracted in the PS with the electrostatic septum and the magnetic septa on. The strength of the electrostatic septum (SEH23) was determined by applying a voltage of \SI{-177}{\kilo\volt} across a gap of \SI{15.11}{\milli\metre}, resulting in an electric field of \SI{11.708}{\mega\volt\per\metre}. Given an effective length of \SI{0.8}{\metre}, the resulting strength was calculated as $\theta_{SEH23} = \arctan \left( \frac{|\mathbf{E}| \cdot \text{effective length}}{p \cdot \beta \cdot 10^9} \right)$, and incorporated into the MAD-X input as $kPESEH23$.
-
-For the magnetic septa, the strength of SMH57 was derived from a current of \SI{9120}{\ampere} (measured on 12.11.21), scaled from codilog data to obtain a strength of $\theta_{SMH57} = \frac{\text{current} \cdot 0.378}{9871 \cdot \mathbf{B} \rho}$, which was input into MAD-X as $kPESMH57$. Similarly, SMH61 had a measured current of \SI{1170}{\ampere} (measured on 12.11.21), with a strength calculated as $\theta_{SMH61} = \frac{\text{current} \cdot 0.247}{2350 \cdot \mathbf{B} \rho}$, and input into MAD-X as $kPESMH61$.
-
-
+To test the accuracy of the MFC model, the F61D transfer line from the PS to the East Dump was chosen as it can be used extensively for Machine Development (MD) studies as it contains a BTV for beam size measurement and three quadrupoles for optics. It can also be operated in parallel to the operational beams with no impact on them. A more detailed description of the line can be found in section \ref{Quadrupole Scan}.
+\\
+\\
+The initial condition of the F61D transfer line were found using the twiss parameters from the PS Ring slow extraction \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/Check%20scripts/slow_extraction_trajectory_maptrack_inital_conditions.ipynb}{script}. The beam envelope was extracted using a pycollimate simulation and retrieving the four particles marking the edge of the extracted separatrix, see Fig. \ref{fig:init_pycollimate}.
 
 \begin{figure}[H]
 \centering
@@ -233,7 +241,10 @@ For the magnetic septa, the strength of SMH57 was derived from a current of \SI{
 \label{fig:init_pycollimate}
 \end{figure}
 
-Figure \ref{fig:beam_envelope} shows the envelope of the slow extraced beam from the PS to the East Area. This simulation was used to calculate the initial conditions before entering the stray fields of MU62.
+The tune of the PS was match to be on resonance and the chromaticity match to measurement from 12.11.2021 (Qxp=-1.239, Qyp=0.242). These four particles were tracked during their last turn before being extracted in the PS with the electrostatic septum and the magnetic septa on. The strength of the electrostatic septum (SEH23) was determined by applying a voltage of \SI{-177}{\kilo\volt} across a gap of \SI{15.11}{\milli\metre}, resulting in an electric field of \SI{11.708}{\mega\volt\per\metre}. Given an effective length of \SI{0.8}{\metre}, the resulting strength was calculated as $\theta_{SEH23} = \arctan \left( \frac{|\mathbf{E}| \cdot \text{effective length}}{p \cdot \beta \cdot 10^9} \right)$, and incorporated into the MAD-X input as \texttt{kPESEH23}.
+\\
+\\
+For the magnetic septa, the strength of SMH57 was derived from a current of \SI{9120}{\ampere} (measured on 12.11.21), scaled from codilog data to obtain a strength of $\theta_{SMH57} = \frac{\text{current} \cdot 0.378}{9871 \cdot \mathbf{B} \rho}$, which was input into MAD-X as \texttt{kPESMH57}. Similarly, SMH61 had a measured current of \SI{1170}{\ampere} (measured on 12.11.21), with a strength calculated as $\theta_{SMH61} = \frac{\text{current} \cdot 0.247}{2350 \cdot \mathbf{B} \rho}$, and input into MAD-X as \texttt{kPESMH61}. Figure \ref{fig:beam_envelope} shows the envelope of the slow extracted beam from the PS to the East Area. This simulation was used to calculate the initial conditions before entering the stray fields of MU62.
 
 
 \begin{figure}[H]
@@ -243,73 +254,67 @@ Figure \ref{fig:beam_envelope} shows the envelope of the slow extraced beam from
 \label{fig:beam_envelope}
 \end{figure}
 
-\begin{table}[ht]
-    \centering
-    \caption{Initial condition upstream of the MU62 magnet}
-    \begin{tabular}{l c}
-        \hline
-        \textbf{Twiss Parameter} & \textbf{Value} \\
-        \hline
-        $\beta_{x0}$ & 7.48 \\
-        $\beta_{y0}$ & 26.14 \\
-        $\alpha_{x0}$ & 0.0021 \\
-        $\alpha_{y0}$ & 0.0591 \\
-        $D_{x0}$ & 1.428 \\
-        $D_{y0}$ & 0.0 \\
-        $D'_{x0}$ & -0.021 \\
-        $D'_{y0}$ & 0.0 \\
-        \hline
-    \end{tabular}
-    \label{tab:twiss_parameters}
+
+\begin{table}[htbp]
+\centering
+\caption{Initial condition upstream of the MU62 magnet}
+\label{tab:twiss_parameters}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+$\beta_{x}$ [m] & $\beta_{y}$ [m] & $\alpha_{x}$ & $\alpha_{y}$ & $D_{x}$ [m] & $D_{y}$ [m] & $D^{'}_{x}$[mrad] & $D^{'}_{y}$[mrad] \\
+\hline
+7.48 & 26.14 & 0.0021 & 0.0591 & 1.428 & 0.0 & -0.021 & 0.0 \\
+\hline
+\end{tabular}
 \end{table}
 
-\begin{table}[ht]
-    \centering
-    \caption{Comparison of Simulated and Measured Twiss Parameters after the MU62 stray fields.}
-    \begin{tabular}{l c c}
-        \hline
-        \textbf{Twiss Parameter} & \textbf{Simulated} & \textbf{Measured} \\
-        \hline
-        $\beta_{x0}$ & 35 & 154 \\
-        $\beta_{y0}$ & 3.4 & 5.2 \\
-        $\alpha_{x0}$ & -7.4 & -37 \\
-        $\alpha_{y0}$ & 2.1 & 0.25 \\
-        $D_{x0}$ & 3.2 & 0.13 \\
-        $D_{y0}$ & 0 & 0 \\
-        $D'_{x0}$ & 0.63 & 0.02 \\
-        $D'_{y0}$ & 0 & 0 \\
-        \hline
-    \end{tabular}
-    \label{tab:twiss_comparison}
+
+The MFC model was added to the default F61D transfer line sequence in MAD-X, see Fig. \ref{fig:f61d_with_stray}. The F61D with stray field line \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/c6cbcafacca274000d2bfc501f39cf711375de90/ps_extraction/east-fast-extraction/f61d_with_stray/F61D_with_stray.ipynb}{script} has the stray field element of the MU62 magnet decomposed into multipole and can be found at \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/c6cbcafacca274000d2bfc501f39cf711375de90/ps_extraction/east-fast-extraction/f61d_with_stray/strayMU62.ele}{strayMU62.ele} and \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/c6cbcafacca274000d2bfc501f39cf711375de90/ps_extraction/east-fast-extraction/f61d_with_stray/strayMU62.seq}{strayMU62.seq}. Using the initial conditions upstream of MU62 and the PS lattice, a Twiss computation was run to compare the initial parameters between the simulation and measurements. It is important to note that the initial conditions derived from the PS lattice are upstream of the MU62 magnet, whereas the initial conditions from empirical measurements are taken after the MU62 magnet and before the Q74L magnet. For details on how the initial parameters were determined through measurement, see Section \ref{initial beam parameters empirical}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{02_Simulation/images/F61D_with_stray.png}
+\caption{F61D with stray field multipole of MU62. The orange rectangle in the synoptic is a representation the multipole component of the stray field.}
+\label{fig:f61d_with_stray}
+\end{figure}
+
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of Simulated and Measured Twiss Parameters after the MU62 stray fields, upstream of Q74L.}
+\label{tab:twiss_comparison}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+& $\beta_{x}$ [m] & $\beta_{y}$ [m] & $\alpha_{x}$ & $\alpha_{y}$ & $D_{x}$ [m] & $D_{y}$ [m] & $D^{'}_{x}$ [mrad] & $D^{'}_{y}$ [mrad] \\
+\hline
+\textbf{Simulated} & 35 & 3.4 & -7.4 & 2.1 & 3.2 & 0 & 0.63 & 0 \\
+\hline
+\textbf{Measured} & 154 & 5.2 & -37 & 0.25 & 0.13 & 0 & 0.02 & 0 \\
+\hline
+\end{tabular}
 \end{table}
 
-The comparison of the simulated and measured Twiss parameters after the MU62 stray fields reveals significant discrepancies. The simulated values for $\beta_{x0}$, $\alpha_{x0}$, and $D_{x0}$ show considerable deviations from the measured data, with the simulated $\beta_{x0}$ and $\alpha_{x0}$ being notably lower than the measured values. These differences suggest that the simulation model does not accurately capture the conditions observed in the empirical measurements. Further investigation is required to identify the underlying causes of these discrepancies and to improve the accuracy of the simulation model. Adjustments to the model parameters or the inclusion of additional physical effects might be necessary to achieve better alignment between simulation and measurement.
+The comparison of the simulated and measured Twiss parameters after the MU62 stray fields reveals significant discrepancies. The simulated values for $\beta_{x}$, $\alpha_{x}$, and $D_{x}$ show considerable deviations from the measured data, with the simulated $\beta_{x}$ and $\alpha_{x}$ being notably lower than the measured values. These differences suggest that the simulation model does not accurately capture the conditions observed in the empirical measurements. Further section will try to identify the underlying causes of these discrepancies and to improve the accuracy of the simulation model by adding additional stray field maps to achieve better alignment between simulation and measurement.
+
 
 \subsection{Stitched model}
 
-The slow extraction cannot be transported with a twiss, you need to perform tracking. The distribution on the edge of the septum blade make three turns and are extracted on the fourth one, whereas the ones outside the septum blade are extracted in the present turn.
+The slow extraction process cannot be adequately described using Twiss parameters alone; it requires detailed tracking. Particles at the edge of the septum blade make three turns and are extracted on the fourth, while those outside the septum blade are extracted in the current turn.
 
 The \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/stitched_slow_extraction_east_PTC_single_turn.ipynb}{script} tracks the pycollimate distribution in the PS, save the distribution at the entrance of MU62, remove the mean x and xp and then tracks it in the F61D line. This simulation also include the MFC of MU63.
 
-
-\begin{table}[ht]
-    \centering
-    \caption{Twiss Parameters from Distribution}
-    \begin{tabular}{l c}
-        \hline
-        \textbf{Twiss Parameter} & \textbf{Value} \\
-        \hline
-        $\beta_x$ & 167.32 \\
-        $\alpha_x$ & 21.61 \\
-        $\beta_y$ & 1.21 \\
-        $\alpha_y$ & 0.33 \\
-        $\epsilon_x$ & $1.78 \times 10^{-7}$ \\
-        $\epsilon_y$ & $3.8 \times 10^{-8}$\\
-        \hline
-    \end{tabular}
-    \label{tab:twiss_distribution}
+\begin{table}[htbp]
+\centering
+\caption{Initial condition upstream of the MU62 magnet}
+\label{tab:twiss_parameters}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$\beta_{x}$ [m] & $\beta_{y}$ [m] & $\alpha_{x}$ & $\alpha_{y}$ & $\epsilon_x$ [m] & $\epsilon_y$ [m] \\
+\hline
+167.32 & 1.21 & 21.61 & 0.33 & $1.78 \times 10^{-7}$ & $3.8 \times 10^{-8}$ \\
+\hline
+\end{tabular}
 \end{table}
-
 
 \begin{figure}[H]
 \centering
@@ -318,79 +323,77 @@ The \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/Elio
 \label{fig:stitched_PTC}
 \end{figure}
 
-\subsection{Repository with the Full Stitching fomr the PS Ring to the East Dump}
+\subsection{Repository with the Full Stitching from the PS Ring to the East Dump}
 
-The repository name is \href{https://gitlab.cern.ch/eljohnso/stray-fields}{stray-fields}. 
+The repository containing all necessary scripts is available at \href{https://gitlab.cern.ch/eljohnso/stray-fields}{stray-fields}.
 
-Step one, you need to create the distribution upstream of SEH23 using pycollimate. This is done in this \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/pycollimate.ipynb}{script} which gives you the distribution\_at\_seh23.pkl file.
-
-Step two is to run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/ps_ring.ipynb?ref_type=heads}{ps ring} which tracks the particle distribution in the PS ring and outputs the distribution before entering in the MU62
-
-Step three is to run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/f61d_tracking.ipynb?ref_type=heads}{f61d tracking} which takes the distribution entering in MU62 and tracking it in the F61D line.
+\begin{itemize}
+    \item \textbf{Step one:} Create the distribution upstream of SEH23 using pycollimate. This is done using this \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/pycollimate.ipynb}{script}, which generates the \texttt{distribution\_at\_seh23.pkl} file.
+    \item \textbf{Step two:} Run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/ps_ring.ipynb?ref_type=heads}{ps ring}, which tracks the particle distribution in the PS ring and outputs the distribution before entering MU62.
+    \item \textbf{Step three:} Run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/f61d_tracking.ipynb?ref_type=heads}{f61d tracking}, which takes the distribution entering MU62 and tracks it in the F61D line.
+\end{itemize}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/full_stitching_PTC.png}
-\caption{Full Stitched model PTC tracking.}
+\caption{Full stitched model PTC tracking and comparison with measurements.}
 \label{fig:full_stitched_PTC}
 \end{figure}
 
-Something to note is that the distribution from tracking is non gaussian so when computing the twiss parameters there might be some discrepancy.
+It is important to note that the distribution obtained from tracking is non-Gaussian, which may result in discrepancies when computing the Twiss parameters.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/non_gaussian.png}
-\caption{The distributions are not gaussian.}
-\label{fig:full_stitched_PTC}
+\caption{The distributions are non-Gaussian.}
+\label{fig:non_gaussian}
 \end{figure}
 
-Perhaps instead of showing distribution of particles it is interesting to see the difference in the ellipses, see Fig. \ref{fig:ellipses.}.
+Table \ref{tab:twiss_parameters} compares the initial parameters found upstream of MU62 using the full stitched model or the empirical measurement.
+
+\begin{table}[htbp]
+\centering
+\caption{Initial condition upstream of the MU62 magnet}
+\label{tab:twiss_parameters}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Label & $\beta_{x}$ [m] & $\beta_{y}$ [m] & $\alpha_{x}$ & $\alpha_{y}$ & $\epsilon_x$ [m] & $\epsilon_y$ [m] \\
+\hline
+Stray Field PTC & $154$ & $2.70$ & $-36.3$ & $1.92$ & $1.83 \times 10^{-7}$ & $3.75 \times 10^{-8}$ \\
+\hline
+Measurement & $154$ & $5.22$ & $-36.9$ & $0.252$ & $2.99 \times 10^{-7}$ & $1.38 \times 10^{-7}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Instead of displaying the particle distribution, it may be more informative to examine the differences in the ellipses, as shown in Fig. \ref{fig:ellipses}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/ellipses.png}
-\caption{Comparison between the ellipses produces by the twiss parameters of the simulation and the tracking.}
-\label{fig:ellipses.}
+\caption{Comparison between the ellipses produced by the Twiss parameters of the simulation and the tracking.}
+\label{fig:ellipses}
 \end{figure}
 
-We can also have a look at the twiss parameters evolution along the line, see Fig. \ref{fig:twiss_params}.
+Additionally, we can examine the evolution of the Twiss parameters along the line, as shown in Fig. \ref{fig:twiss_params}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/twiss_parameters_comparison.png}
-\caption{Comparison between the twiss parameters along the line of the simulation and the tracking.}
+\caption{Comparison between the Twiss parameters along the line of the simulation and the empirical measurement.}
 \label{fig:twiss_params}
 \end{figure}
 
-\begin{table}[ht]
-    \centering
-    \caption{Comparison of Twiss Parameters: Measurement vs. Stray Field PTC}
-    \begin{tabular}{l c c}
-        \hline
-        \textbf{Twiss Parameter} & \textbf{Measurement} & \textbf{Stray Field PTC} \\
-        \hline
-        $\beta_x$ & $1.54 \times 10^2$ & $1.54 \times 10^2$ \\
-        $\alpha_x$ & $-3.69 \times 10^1$ & $-3.63 \times 10^1$ \\
-        $\epsilon_x$ & $2.99 \times 10^{-7}$ & $1.83 \times 10^{-7}$ \\
-        \hline
-        $\beta_y$ & $5.22 \times 10^0$ & $2.70 \times 10^0$ \\
-        $\alpha_y$ & $2.52 \times 10^{-1}$ & $1.92 \times 10^0$ \\
-        $\epsilon_y$ & $1.38 \times 10^{-7}$ & $3.75 \times 10^{-8}$ \\
-        \hline
-    \end{tabular}
-    \label{tab:twiss_comparison_measurement_ptc}
-\end{table}
+From the previous plots, it is evident that the horizontal model performs well, whereas the description of the vertical plane is less accurate. To investigate the impact on the particle distribution, I replaced the horizontal MFC model with a vertical MFC model, calculating $B_{x}$ as follows:
+\[
+B_{x} = \begin{bmatrix}  
+x_{\text{center}} \\  
+y_{\text{offset}} \\
+z_{\text{center}} 
+\end{bmatrix}
+\]
 
-From the previous plots, the horizontal model looks to work well. The vertical plane's description isn't as good.
-
-I tried to replace the horizontal MFC by a vertical MFC model to see how it impacts the particle distribution where I calculate $B_{x}$ as:
-
-$$ B_{x} = \begin{bmatrix}  
-x_{center} \\  
-y_{offset}\\
-z_{center} \end{bmatrix} $$
-
-with coupling terms (should be small) By(y) Bx(x) and $\frac{\delta^{k} B_{i}}{\delta^{k} x_{j}}$ terms. We observe that there is no difference between taking the MCP model of dBy/dx or dBx/dy it gives the same results in both planes. This can also be seen on Fig. \ref{fig:coupling_terms} that show that the second order terms are the same. Then I think that the initial distribution in the PS ring in the vertical plane is wrong.
+Including the coupling terms (which should be small) $B_{y}(y)$, $B_{x}(x)$, and $\frac{\partial^{k} B_{i}}{\partial x_{j}^{k}}$, we observe no significant difference between using the MCP model for $\frac{\partial B_{y}}{\partial x}$ or $\frac{\partial B_{x}}{\partial y}$. Both yield similar results in the horizontal and vertical planes. This is illustrated in Fig. \ref{fig:coupling_terms}, which shows that the second-order terms are identical. Thus, it appears that the initial distribution in the PS ring for the vertical plane may be incorrect.
 
 \begin{figure}[H]
 \centering
@@ -399,45 +402,62 @@ with coupling terms (should be small) By(y) Bx(x) and $\frac{\delta^{k} B_{i}}{\
 \label{fig:coupling_terms}
 \end{figure}
 
-Figure \ref{fig:comparison_sim_meas} shows the difference between the beam size observed at the BTV of the East Dump through simulation and beam size measurement. We observe an excellent agreement in the horizontal plane but a mismatch in the vertical plane.
+Figure \ref{fig:comparison_sim_meas} shows the difference between the beam size observed at the BTV of the East Dump through simulation and beam size measurement. We observe excellent agreement in the horizontal plane but a mismatch in the vertical plane.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/comparison_sim_meas.png}
-\caption{Comparison between the simulated and measurement beam size at the BTV of the East Dump.}
+\caption{Comparison between the simulated and measured beam size at the BTV of the East Dump.}
 \label{fig:comparison_sim_meas}
 \end{figure}
 
+
+
+
 \subsection{MU63}
 
-To fix the mismatch in the vertical plane, I tried to add the MU63 stray fields. I've tracked the particle reference trajectory and extracted the MFC, see Fig. \ref{fig:track_mu63, fig:mfc_mu63}.
+To fix the mismatch in the vertical plane, the MU63's stray fields were computed by tracking the particle reference trajectory and extracting the MFC, see Fig. \ref{fig:track_mu63} and \ref{fig:mfc_mu63}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/track_mu63.png}
-\caption{.}
+\caption{Particle tracking through MU63.}
 \label{fig:track_mu63}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/mfc_mu63.png}
-\caption{.}
+\caption{MFC model of MU63.}
 \label{fig:mfc_mu63}
 \end{figure}
 
-However, with full multipole component of the MU63. This is incorrect as the MU63 has shims that straighten the B-field component which would drastically reduce the quadrupolar component. So I've kept only the dipole component which of course doesn't change the optics and improve the match in the vertical field.
+However, including the full multipole components of the MU63 is incorrect since the MU63 has shims that straighten the B-field component, significantly reducing the quadrupolar component. Therefore, only the dipole component was retained, which, as expected, does not alter the optics.
+\\
+\\
+From this, it appears that the optics in the horizontal plane are correct but mismatched in the vertical plane. This suggests the need to add a quadrupole component at a very low $\beta_{x}$ location upstream of the F61D line. Possibly, in MU61, where the excursion is already quite large, there might be a quadrupole component. Consequently, the MU61 quadrupole component was optimized by slightly adjusting the values and minimizing the difference between measurement and simulation using Pybobyqa. The results were slightly better but not significantly improved.
+\\
+\\
+Subsequently, the four quadrupole components of MU60 and MU61, the two main units before extraction, were optimized. In these units, the transverse excursion is already considerable, and the quadrupole component is not aligned with the reference orbit. Each dipole has two quadrupole components, resulting in four parameters to optimize.
+\\
+\\
+The actual quadrupole components at the excursion were simulated using the opera model, which provided the values shown in Table \ref{tab:quadrupole_components} and Fig. \ref{fig:comparison_four_compo}.
 
-From this it seems that the optics in the horizontal plane are correct but mismatched in the vertical plane. This means I need to add a quadrupole component in a very low $\beta_{x}$ location upstream of the F61D line. Perhaps in MU61 the excursion is quite large already and there might be a quadrupole component. Thus I've tried optimizing on the MU61 quadrupole component by slightly changing the values and minimze the difference between measurement and simulation using Pybobyqa, the results are slightly better but not great.
-
-Then I've optimized on the four quadrupole components of MU60 and MU61, the two main units before extraction where the transverse excursion is already quite large and where the quadrupole component is not the one of the reference orbit. Each dipoles has two quadrupoles components which makes four parameters to optimize on.
-
-I've simulated the actual quadrupole components at the excursion using the opera model which gives me these values, see Fig. \ref{fig:comparison_four_compo}.
-
-pr.bht61.f = 0.02723
-pr.bht61.d = -0.05518
-pr.bhu60.f = 0.04969
-pr.bhu60.d = -0.05831
+\begin{table}[htbp]
+\centering
+\caption{Simulated quadrupole components at the excursion using the opera model}
+\label{tab:quadrupole_components}
+\begin{tabular}{|l|c|}
+\hline
+Component & Value \\
+\hline
+pr.bht61.f & 0.02723 \\
+pr.bht61.d & -0.05518 \\
+pr.bhu60.f & 0.04969 \\
+pr.bhu60.d & -0.05831 \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 \centering

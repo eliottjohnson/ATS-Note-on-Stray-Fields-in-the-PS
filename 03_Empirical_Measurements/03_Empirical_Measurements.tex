@@ -3,7 +3,13 @@
 
 % Begin this section with a brief introduction about what empirical measurements are, why they are necessary, and what they aim to determine or reveal in the context of stray fields in the PS
 
-Empirical measurements constitute the fundamental foundation to validate and improve simulation models, specifically in examining the initial conditions of the beam at the exit of the PS. These assessments are conducted through quadrupole scans at the East Dump.
+\subsubsection{Measurement of the extracted beam parameters}
+
+Quadrupole scans have been performed to reconstruct the beam parameters in the East Area extraction line. The beam size was measured with Beam instrumentation - TV (BTV) screens as the strength of one or multiple quadrupoles was varied. The initial parameters can be determined empirically by fitting them to a MAD-X simulation against the measurements. BTVs are not ideal instruments for performing these measurements; they saturate at the extraction intensities, and the signal must be fitted with care. Filter wheels have been installed to reduce saturation, allowing for more accurate initial parameter measurement. In addition, a dispersion measurement will be performed to reduce the degrees of freedom of fit.
+Kick response measurements have also been carried out. Future studies will compare the initial parameters measured with those predicted by tracking through the field maps in MAD-X.
+
+
+Empirical measurements provide a fundamental foundation for validating and improving simulation models, particularly in examining the initial conditions of the beam at the PS exit. These assessments are conducted through quadrupole scans at the East Dump.
 
 \begin{figure}[htbp]
 \centering
@@ -22,6 +28,7 @@ Situated within the East Area complex is a short line, designed for extraction s
 \end{figure}
 
 \subsection{Quadrupole scan}
+\label{Quadrupole Scan}
 
 % Describe the process and the purpose of the quadrupole scan. You should discuss:
 % The objective of the scan.
@@ -29,7 +36,7 @@ Situated within the East Area complex is a short line, designed for extraction s
 % The process: How is the scan conducted?
 % The results: What data was collected? What are the key findings from the scan?
 
-A quadrupole scan are used to measure beam parameters and involves adjusting the strength of a quadrupole, and subsequently observing the variations in the beam size ($\sigma$) and beam position (centroid) across both planes using an instrument located downstream of the quadrupole being modified, see Fig. \ref{fig:quad_scan_example}. The objective of this scan is to finely tune the simulation tool MAD-X \cite{noauthor_mad_nodate} to enable the prediction of beam sizes through a model that has been adjusted according to these measurements. To achieve this, the initial parameters of the MAD-X model are aligned with the observed measurements as accurately as possible. It is generally advantageous to find the minimum and maximum values of the beam size at the instrument's location, which facilitates the reconstruction of the rematching of the initial conditions. The parameter-matching process is conducted in Python, utilizing either the Scipy or the Py-BOBYQA library \cite{cartis_improving_2019, cartis_escaping_2022}.
+A quadrupole scan is used to measure beam parameters and involves adjusting the strength of a quadrupole, and subsequently observing the variations in the beam size ($\sigma$) and beam position (centroid) across both planes using an instrument located downstream of the quadrupole being modified, see Fig. \ref{fig:quad_scan_example}. The objective of this scan is to finely tune the simulation tool MAD-X \cite{noauthor_mad_nodate} to enable the prediction of beam sizes through a model that has been adjusted according to these measurements. To achieve this, the initial parameters of the MAD-X model are aligned with the observed measurements as accurately as possible. It is generally advantageous to find the minimum and maximum values of the beam size at the instrument's location, which facilitates the reconstruction of the rematching of the initial conditions. The parameter-matching process is conducted in Python, utilizing either the Scipy or the Py-BOBYQA library \cite{cartis_improving_2019, cartis_escaping_2022}.
 
 \begin{figure}[htbp]
 \centering
@@ -208,6 +215,7 @@ It is expected that the measurement and simulation with the East Dump will be cl
 
 \newpage
 \subsubsection{Initial beam parameters of the East Area slow extracted beam}
+\label{initial beam parameters empirical}
 
 The initial parameters located upstream of the first quadrupole of the transfer line (Q74) are presented in Table \ref{table:beam_parameters_1} and \ref{table:beam_parameters_2}.
 
