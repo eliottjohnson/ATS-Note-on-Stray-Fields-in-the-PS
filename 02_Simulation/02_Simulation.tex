@@ -301,7 +301,7 @@ The comparison of the simulated and measured Twiss parameters after the MU62 str
 
 The slow extraction process cannot be adequately described using Twiss parameters alone; it requires detailed tracking. Particles at the edge of the septum blade make three turns and are extracted on the fourth, while those outside the septum blade are extracted in the current turn.
 
-The \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/stitched_slow_extraction_east_PTC_single_turn.ipynb}{script} tracks the pycollimate distribution in the PS, save the distribution at the entrance of MU62, remove the mean x and xp and then tracks it in the F61D line. This simulation also include the MFC of MU63.
+The \href{https://gitlab.cern.ch/eljohnso/acc-models-tls-eliott-fork/-/blob/EliottBranch/ps_extraction/east-fast-extraction/stitched_slow_extraction_east_PTC_single_turn.ipynb}{script} tracks the pycollimate distribution in the PS, save the distribution at the entrance of MU62, remove the mean x and xp and then tracks it in the F61D line. This simulation also include the MFC of MU63. This script aimed to consolidate everything into a single Python file. However, the next section \ref{Stitch in three steps} presents a cleaner approach, dividing the simulation into three more manageable and comprehensible steps.
 
 \begin{table}[htbp]
 \centering
@@ -324,13 +324,14 @@ $\beta_{x}$ [m] & $\beta_{y}$ [m] & $\alpha_{x}$ & $\alpha_{y}$ & $\epsilon_x$ [
 \end{figure}
 
 \subsection{Repository with the Full Stitching from the PS Ring to the East Dump}
+\label{Stich in three steps}
 
 The repository containing all necessary scripts is available at \href{https://gitlab.cern.ch/eljohnso/stray-fields}{stray-fields}.
 
 \begin{itemize}
-    \item \textbf{Step one:} Create the distribution upstream of SEH23 using pycollimate. This is done using this \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/pycollimate.ipynb}{script}, which generates the \texttt{distribution\_at\_seh23.pkl} file.
-    \item \textbf{Step two:} Run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/ps_ring.ipynb?ref_type=heads}{ps ring}, which tracks the particle distribution in the PS ring and outputs the distribution before entering MU62.
-    \item \textbf{Step three:} Run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/f61d_tracking.ipynb?ref_type=heads}{f61d tracking}, which takes the distribution entering MU62 and tracks it in the F61D line.
+    \item \textbf{Step one:} Create the distribution upstream of SEH23 using pycollimate. This is done using the \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/pycollimate.ipynb}{pycollimate.ipynb} notebook, which generates the \texttt{distribution\_at\_seh23.pkl} file.
+    \item \textbf{Step two:} Run the \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/ps_ring.ipynb?ref_type=heads}{ps\_ring.ipynb} notebook, which tracks the particle distribution in the PS ring and outputs the distribution before entering MU62.
+    \item \textbf{Step three:} Run \href{https://gitlab.cern.ch/eljohnso/stray-fields/-/blob/master/f61d_tracking.ipynb?ref_type=heads}{f61d\_tracking.ipynb}, which takes the distribution entering MU62 and tracks it in the F61D line.
 \end{itemize}
 
 \begin{figure}[H]
@@ -345,11 +346,11 @@ It is important to note that the distribution obtained from tracking is non-Gaus
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{02_Simulation/images/non_gaussian.png}
-\caption{The distributions are non-Gaussian.}
+\caption{The distributions from tracking are non-Gaussian compared to the distribution created from the measured initial conditions.}
 \label{fig:non_gaussian}
 \end{figure}
 
-Table \ref{tab:twiss_parameters} compares the initial parameters found upstream of MU62 using the full stitched model or the empirical measurement.
+Table \ref{tab:twiss_parameters} compares the initial parameters found upstream of MU62 using the full stitched model or the empirical measurement. There is a good agreement in the horizontal plane but a mismatch in the vertical plane.
 
 \begin{table}[htbp]
 \centering
@@ -366,7 +367,7 @@ Measurement & $154$ & $5.22$ & $-36.9$ & $0.252$ & $2.99 \times 10^{-7}$ & $1.38
 \end{tabular}
 \end{table}
 
-Instead of displaying the particle distribution, it may be more informative to examine the differences in the ellipses, as shown in Fig. \ref{fig:ellipses}.
+To understand the disagreement in the vertical plane, rather than displaying the particle distribution, it may be more informative to examine the differences in the ellipses, as shown in Fig. \ref{fig:ellipses}.
 
 \begin{figure}[H]
 \centering
@@ -384,7 +385,7 @@ Additionally, we can examine the evolution of the Twiss parameters along the lin
 \label{fig:twiss_params}
 \end{figure}
 
-From the previous plots, it is evident that the horizontal model performs well, whereas the description of the vertical plane is less accurate. To investigate the impact on the particle distribution, I replaced the horizontal MFC model with a vertical MFC model, calculating $B_{x}$ as follows:
+From the previous plots, it is evident that the horizontal model performs well, whereas the description of the vertical plane is less accurate. To investigate the impact on the particle distribution, the horizontal MFC model was replaced with a vertical MFC model, calculating $B_{x}$ as follows:
 \[
 B_{x} = \begin{bmatrix}  
 x_{\text{center}} \\  
@@ -393,7 +394,7 @@ z_{\text{center}}
 \end{bmatrix}
 \]
 
-Including the coupling terms (which should be small) $B_{y}(y)$, $B_{x}(x)$, and $\frac{\partial^{k} B_{i}}{\partial x_{j}^{k}}$, we observe no significant difference between using the MCP model for $\frac{\partial B_{y}}{\partial x}$ or $\frac{\partial B_{x}}{\partial y}$. Both yield similar results in the horizontal and vertical planes. This is illustrated in Fig. \ref{fig:coupling_terms}, which shows that the second-order terms are identical. Thus, it appears that the initial distribution in the PS ring for the vertical plane may be incorrect.
+Including the coupling terms (which should be small) $B_{y}(y)$, $B_{x}(x)$, and $\frac{\partial^{k} B_{i}}{\partial x_{j}^{k}}$, we observe no significant difference between using the MCP model for $\frac{\partial B_{y}}{\partial x}$ or $\frac{\partial B_{x}}{\partial y}$. Both yield similar results in the horizontal and vertical planes. This is illustrated in Fig. \ref{fig:coupling_terms}, which shows that the second-order terms are identical. Thus, this lead to the hypothesis that the initial distribution in the PS ring for the vertical plane may be incorrect.
 
 \begin{figure}[H]
 \centering
@@ -427,7 +428,7 @@ To fix the mismatch in the vertical plane, the MU63's stray fields were computed
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=1.0\textwidth]{02_Simulation/images/mfc_mu63.png}
+\includegraphics[width=0.7\textwidth]{02_Simulation/images/mfc_mu63.png}
 \caption{MFC model of MU63.}
 \label{fig:mfc_mu63}
 \end{figure}
@@ -435,17 +436,20 @@ To fix the mismatch in the vertical plane, the MU63's stray fields were computed
 However, including the full multipole components of the MU63 is incorrect since the MU63 has shims that straighten the B-field component, significantly reducing the quadrupolar component. Therefore, only the dipole component was retained, which, as expected, does not alter the optics.
 \\
 \\
-From this, it appears that the optics in the horizontal plane are correct but mismatched in the vertical plane. This suggests the need to add a quadrupole component at a very low $\beta_{x}$ location upstream of the F61D line. Possibly, in MU61, where the excursion is already quite large, there might be a quadrupole component. Consequently, the MU61 quadrupole component was optimized by slightly adjusting the values and minimizing the difference between measurement and simulation using Pybobyqa. The results were slightly better but not significantly improved.
+From this, it appears that the optics in the horizontal plane are correct but mismatched in the vertical plane. This suggests the need to add a quadrupole component at a very low $\beta_{x}$ location (so as not to impact the correct optics in that plane) upstream of the F61D line. Possibly, in MU61, where the excursion is already quite large, there might be a quadrupole component that is missing in this version of the simulation.
+
+\subsection{Modifying the MU60 and MU61 quadrupoles components in the PS lattice}
+Consequently, the MU61 quadrupole component was optimized by slightly adjusting the values and minimizing the difference between measurement and simulation using Pybobyqa. The comparison between simulation and measurement were slightly better but not significantly improved.
 \\
 \\
-Subsequently, the four quadrupole components of MU60 and MU61, the two main units before extraction, were optimized. In these units, the transverse excursion is already considerable, and the quadrupole component is not aligned with the reference orbit. Each dipole has two quadrupole components, resulting in four parameters to optimize.
+Subsequently, the four quadrupole components of MU60 and MU61, the two main units before extraction, were optimized in the same way. In these units, the transverse excursion is already considerable, and the quadrupole component is not aligned with the reference orbit. Each dipole has two quadrupole components, resulting in four parameters to optimize.
 \\
 \\
-The actual quadrupole components at the excursion were simulated using the opera model, which provided the values shown in Table \ref{tab:quadrupole_components} and Fig. \ref{fig:comparison_four_compo}.
+The actual quadrupole components at the excursion, as simulated using the Opera model was computed, which provided the values shown in Table \ref{tab:quadrupole_components} and Fig. \ref{fig:comparison_four_compo}. One notices still a good agreement in the horizontal plane and an improvement in the prediction of the beam size in the vertical plane.
 
 \begin{table}[htbp]
 \centering
-\caption{Simulated quadrupole components at the excursion using the opera model}
+\caption{Simulated quadrupole components at the excursion using the Opera model}
 \label{tab:quadrupole_components}
 \begin{tabular}{|l|c|}
 \hline
@@ -462,28 +466,22 @@ pr.bhu60.d & -0.05831 \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/comparison_sim_meas_four_compo.png}
-\caption{Comparison four components.}
+\caption{Comparison between the simulated beam size and the measurement using the mean K1 values from the Opera model.}
 \label{fig:comparison_four_compo}
 \end{figure}
 
-Running the optimizer algorithm, it converges on different quadrupole components with a better match between beam size and simulation.
+Running the optimizer algorithm on these four quadrupoles components (which are average values and thus might need to be slightly tweaked), it converges on different quadrupole components with a better match between beam size and simulation, see Fig. \ref{fig:comparison_bobyqa}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{02_Simulation/images/comparison_sim_meas_bobyqa.png}
-\caption{Comparison of beam size and simulation using pybobyqa.}
+\caption{Comparison of beam size and simulation using pybobyqa on the four quadrupoles components of MU60 and MU61.}
 \label{fig:comparison_bobyqa}
 \end{figure}
 
 \subsection{Replacing MU60 and MU61 with stray fields}
 
-From previous notes, it seems replacing only MU62 matched well the measurement in the horizontal plane but not in the vertical plane.
-
-Adding MU63 doesn't help correcting the mismatch in the vertical plane because it's in a region of high $\beta_{x}$ which would change the optics in that plane and additionally it is shimmed so I don't think there is much quadrupolar effect, thus I've added only the dipole component of this magnet.
-
-I've then thought about the large excursion in the two preceding main units, MU60 and MU61 and tried to optimise on the four quadrupole component that are in the PS lattice file.
-
-I found some solution that match the measurement pretty well but they are very different.
+From the previous sections, it seems replacing only MU62 matched well the measurement in the horizontal plane but not in the vertical plane. Adding MU63 doesn't help correcting the mismatch in the vertical plane because it's in a region of high $\beta_{x}$ which if it had any quadrupolar component would change the optics in that plane (which are already good) and additionally it is shimmed so there isn't in any case much quadrupolar effect, thus only the dipolar component of this magnet has been added. I've then thought about the large excursion in the two preceding main units, MU60 and MU61 and tried to optimise on the four quadrupole component that are in the PS lattice file. The optimiser found some solution that match the measurement pretty well but they are very different to one another, see Table \ref{tab:twiss_parameters_mu60_mu61}.
 
 \begin{table}[ht]
     \centering
@@ -492,17 +490,16 @@ I found some solution that match the measurement pretty well but they are very d
         \hline
         & \textbf{MU60 d} & \textbf{MU60 f} & \textbf{MU61 f} & \textbf{MU61 d} \\
         \hline
-        Row 1 & -0.1 & 0.1 & 0.0046 & -0.0862 \\
-        Row 2 & -0.094 & 0.1026 & -0.0247 & -0.0231 \\
-        Row 3 & -0.106 & 0.1045 & 0.0258 & -0.0955 \\
+        Sol. 1 & -0.1 & 0.1 & 0.0046 & -0.0862 \\
+        Sol. 2 & -0.094 & 0.1026 & -0.0247 & -0.0231 \\
+        Sol. 3 & -0.106 & 0.1045 & 0.0258 & -0.0955 \\
         \hline
     \end{tabular}
     \label{tab:twiss_parameters_mu60_mu61}
 \end{table}
 
 
-
-If we compute the quadrupole component of MU60 and MU61 along the trajectory that ejects the beam, we see that the quadrupolar component can not be approximated by a single number.
+Additionally, Fig. \ref{fig:mu60_mu61_q_comp} illustrates that when we calculate the quadrupole component of MU60 and MU61 along the trajectory that ejects the beam, the quadrupolar component cannot be approximated by a single value.
 
 \begin{figure}[H]
 \centering
@@ -520,7 +517,7 @@ If we compute an average quadrupole component in these regions and use them in t
 \label{fig:replace_with_average}
 \end{figure}
 
-\subsection{Adding the full stray fields of MU60 and MU61}
+\subsection{Adding the full stray fields model of MU60 and MU61}
 
 To add the stray field MCP model of MU60 and MU61 in the PS lattice, the PR.MP60 and PR.MP61 elements where removed from the lattice and the MCP where inserted instead. Figure \ref{fig:mcp_mu60_mu61} shows the results in this configuration.
 
@@ -531,9 +528,7 @@ To add the stray field MCP model of MU60 and MU61 in the PS lattice, the PR.MP60
 \label{fig:mcp_mu60_mu61}
 \end{figure}
 
-One thing I don't understand is the excursion with stray MU60 and MU61 is larger then just a drift, see Fig. \ref{excursion_m60_mu61_mcp}. 
-
-I think it's because we have an large x-excursion which create a dipole moment from the quadrupole component. I should try to set x to zero.
+One aspect that remains unclear is why the excursion involving stray MU60 and MU61 is larger than a simple drift, as illustrated in Fig. \ref{fig:excursion_m60_mu61_mcp}. It is hypothesized that this is due to a significant x-excursion, which generates a dipole moment from the quadrupole component. It may be necessary to set the x-coordinate to zero for further analysis.
 
 \begin{figure}[H]
 \centering
@@ -543,6 +538,8 @@ I think it's because we have an large x-excursion which create a dipole moment f
 \end{figure}
 
 Additional issues is that the MCP in these magnets is very dependant on the trajectory of the track of the reference particle that is launched to create the MCP map. Launching with slight offsets in angle and position will dramatically change the quadrupole component profile.
+
+
 
 \subsection{Simulation of Transfer Matrix Using Tracking at Injection}
 
@@ -629,6 +626,6 @@ The source code for the simulations can be found in the following repositories:
 \end{itemize}
 
 
-\subsection{Talk about how the shims are not implemented in OPERA and the solution in MAD-X}
+%\subsection{Talk about how the shims are not implemented in OPERA and the solution in MAD-X}
 
-\subsection{New chapter on extraction in F16}
+%\subsection{New chapter on extraction in F16}

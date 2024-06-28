@@ -31,7 +31,7 @@
 \usepackage{lipsum}
 \usepackage{subcaption}
 
-\title{Technical Note on Stray Fields in the PS}
+\title{Investigations of Stray Fields in the PS}
 \author{
 	E.P. Johnson, M.A. Fraser\; \\		
 	CERN, CH-1211 Geneva, Switzerland
@@ -45,16 +45,7 @@
 \maketitle
 
 \begin{abstract}
-This technical note presents a comprehensive analysis of the stray fields in the Proton Synchrotron (PS) at CERN. The study combines simulation and empirical measurements to understand the impact of these stray fields on beam dynamics. Using MAD-X and OPERA-3D simulation tools, detailed magnetic models of the PS main units were developed, revealing significant spatial variations in dipole and quadrupole fields caused by combined-function magnets.
-\\
-\\
-Empirical measurements, particularly quadrupole scans at the East Dump, were essential for validating and refining the simulation models. Advanced image processing techniques and the use of Beam-TV (BTV) screens with filter wheels ensured accurate beam size measurements, which were critical for determining the initial beam parameters.
-\\
-\\
-The comparison between simulated and measured data exposed some discrepancies, especially in the horizontal plane where simulations generally underestimated beam size. These findings highlight the complexity of modeling stray fields and the importance of integrating empirical measurements for accurate predictions.
-\\
-\\
-The methodologies and results presented provide significant insights into the understanding and management of stray fields in accelerator environments, contributing to improved beam quality and operational parameters in the PS.
+This technical note presents a comprehensive analysis of the stray fields in the Proton Synchrotron (PS) at CERN. The study combines simulation and empirical measurements to understand the impact of these stray fields on beam dynamics. Using MAD-X and OPERA-3D simulation tools, detailed magnetic models of the PS main units were developed.Empirical measurements, particularly quadrupole scans in the F61 beam line to the East Dump, were essential for validating and refining the simulation models. Advanced image processing techniques and the use of Beam-TV (BTV) screens with filter wheels ensured accurate beam size measurements, which were critical for determining the beam parameters after traversing the stray fields of the main units. The comparison between simulated and measured data exposed some discrepancies, especially in the horizontal plane. These findings highlight the complexity of modeling stray fields and the importance of integrating empirical measurements for accurate predictions. The methodologies and results presented provide significant insights into the understanding and management of stray fields in accelerator environments, contributing to improved beam quality and operational parameters in the PS.
 
 \end{abstract}
 \\ \\ \\ 
@@ -89,7 +80,7 @@ The methodologies and results presented provide significant insights into the un
 %%%% Comparison between Simulation and  Measurements %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{04_Compare_Simulation_to_Measurements/04_Compare_Simulation_to_Measurements}
+%\input{04_Compare_Simulation_to_Measurements/04_Compare_Simulation_to_Measurements}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Conclusion %%%%%%%%%%%%%%
@@ -97,12 +88,19 @@ The methodologies and results presented provide significant insights into the un
 
 \section{Conclusion}
 This technical note has provided a comprehensive analysis of stray fields in the Proton Synchrotron (PS) at CERN, combining simulation and empirical measurements to understand their impact on beam dynamics. Using MAD-X and OPERA-3D simulation tools, we developed detailed magnetic models of the PS main units, revealing significant spatial variations in dipole and quadrupole fields due to combined-function magnets.
-
+\\
+\\
 Empirical measurements, especially quadrupole scans at the East Dump, were crucial for validating these simulations. Advanced image processing techniques and the use of BTVs with filter wheels ensured precise beam size measurements, aiding in accurate determination of initial beam parameters.
-
+\\
+\\
 Comparison between simulation and measurement highlighted discrepancies, particularly an underestimation of beam size in simulations, indicating potential unmodeled effects such as air scattering. Despite these differences, the study provided valuable insights into beam dynamics and stray field effects, contributing significantly to the understanding and management of stray fields in accelerator environments.
 
+\newpage
 \bibliography{references.bib}
 \bibliographystyle{IEEEtran}
+
+\newpage
+\appendix
+\input{Appendix/Appendix}
 
 \end{document}
